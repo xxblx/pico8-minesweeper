@@ -134,18 +134,18 @@ local function flag_cell()
 end
 
 local function open_cell()
+    local success = true
     if FIELD[CURSOR.x][CURSOR.y].status < 3 then
         FIELD[CURSOR.x][CURSOR.y].status = 3
 
         if FIELD[CURSOR.x][CURSOR.y].value == -1 then
             FIELD[CURSOR.x][CURSOR.y].value = -2
-            GAME_STATE = 2
-            SERVICE_SPR = 10
-            SERVICE_MSG = 'GAME OVER'
+            success = false
         elseif FIELD[CURSOR.x][CURSOR.y].value == 0 then
             clear_zero_neighbours({ x = CURSOR.x, y = CURSOR.y })
         end
     end
+    return success
 end
 
 local function check_win()
@@ -174,12 +174,20 @@ function _update()
     local xdir = 0
     local ydir = 0
 
+    if (btnp(4)) then flag_cell() end
+    if (btnp(5)) then
+        if not open_cell() then
+            GAME_STATE = 2
+            SERVICE_MSG = 'GAME OVER'
+            SERVICE_SPR = 10
+            return
+        end
+    end
+
     if (btnp(0)) then xdir = -1 end
     if (btnp(1)) then xdir = 1 end
     if (btnp(2)) then ydir = -1 end
     if (btnp(3)) then ydir = 1 end
-    if (btnp(4)) then flag_cell() end
-    if (btnp(5)) then open_cell() end
     move_cursor(xdir, ydir)
 
     if MINES_LEFT == 0 and check_win() then
