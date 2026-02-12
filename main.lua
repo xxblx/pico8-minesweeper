@@ -41,6 +41,7 @@ GAME_STATE = 0
 TIMER = 0
 START_TIME = 0
 SERVICE_MSG = ''
+SERVICE_MSG_CLR = 7
 SERVICE_SPR = nil
 
 local function find_neighbours(x, y)
@@ -179,6 +180,7 @@ function _update()
         if not open_cell() then
             GAME_STATE = 2
             SERVICE_MSG = 'GAME OVER'
+            SERVICE_MSG_CLR = 8
             SERVICE_SPR = 10
             return
         end
@@ -193,9 +195,11 @@ function _update()
     if MINES_LEFT == 0 and check_win() then
         GAME_STATE = 2
         SERVICE_MSG = 'YOU WIN!'
+        SERVICE_MSG_CLR = 3
         SERVICE_SPR = 12
     elseif MINES_LEFT == 0 then
         SERVICE_MSG = 'WRONG!'
+        SERVICE_MSG_CLR = 8
         SERVICE_SPR = 11
     else
         SERVICE_MSG = ''
@@ -205,6 +209,7 @@ end
 
 function _draw()
     cls(0)
+    color(7)
     for i = 1, GRID.x do
         for ii = 1, GRID.y do
             local cell_sprite
@@ -237,6 +242,7 @@ function _draw()
         spr(SERVICE_SPR, 42, 120)
     end
     if SERVICE_MSG then
+        color(SERVICE_MSG_CLR)
         print(SERVICE_MSG, 52, 123)
     end
 end
