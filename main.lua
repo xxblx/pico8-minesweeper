@@ -125,7 +125,7 @@ local function move_cursor(xdir, ydir)
 end
 
 local function flag_cell()
-    if FIELD[CURSOR.x][CURSOR.y].status == 1 then
+    if FIELD[CURSOR.x][CURSOR.y].status == 1 and MINES_LEFT > 0 then
         FIELD[CURSOR.x][CURSOR.y].status = 2
         MINES_LEFT = MINES_LEFT - 1
     elseif FIELD[CURSOR.x][CURSOR.y].status == 2 then
