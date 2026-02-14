@@ -183,14 +183,20 @@ function _update()
     local xdir = 0
     local ydir = 0
 
-    if (btnp(4)) then flag_cell() end
+    if (btnp(4)) then
+        sfx(2)
+        flag_cell()
+    end
     if (btnp(5)) then
-        if not open_cell() then
+        if open_cell() then
+            sfx(1)
+        else
             GAME_STATE = 2
             SERVICE_MSG = 'GAME OVER'
             SERVICE_MSG_CLR = 8
             SERVICE_SPR = 10
             open_all_cells()
+            sfx(3)
             return
         end
     end
@@ -207,6 +213,7 @@ function _update()
         SERVICE_MSG_CLR = 3
         SERVICE_SPR = 12
         open_all_cells()
+        music(4)
     elseif MINES_LEFT == 0 then
         SERVICE_MSG = 'WRONG!'
         SERVICE_MSG_CLR = 8
