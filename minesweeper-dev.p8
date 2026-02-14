@@ -1,6 +1,8 @@
 pico-8 cartridge // http://www.pico-8.com
 version 43
 __lua__
+--pico8-minesweeper v1.0
+--by xxblx
 #include main.lua
 --❎[x]
 --▥[z]
