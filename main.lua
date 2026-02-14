@@ -149,6 +149,14 @@ local function open_cell()
     return success
 end
 
+local function open_all_cells()
+    for i = 1, GRID.x do
+        for ii = 1, GRID.y do
+            FIELD[i][ii].status = 3
+        end
+    end
+end
+
 local function check_win()
     for i = 1, GRID.x do
         for ii = 1, GRID.y do
@@ -182,6 +190,7 @@ function _update()
             SERVICE_MSG = 'GAME OVER'
             SERVICE_MSG_CLR = 8
             SERVICE_SPR = 10
+            open_all_cells()
             return
         end
     end
@@ -197,6 +206,7 @@ function _update()
         SERVICE_MSG = 'YOU WIN!'
         SERVICE_MSG_CLR = 3
         SERVICE_SPR = 12
+        open_all_cells()
     elseif MINES_LEFT == 0 then
         SERVICE_MSG = 'WRONG!'
         SERVICE_MSG_CLR = 8
