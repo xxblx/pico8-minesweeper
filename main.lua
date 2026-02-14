@@ -9,40 +9,15 @@ GRID = {
     y = 8
 }
 OFFSET = 4
-if DIFFICULTY == 2 then
-    GRID = {
-        x = 12,
-        y = 12
-    }
-    OFFSET = 2
-    MINES = 22
-elseif DIFFICULTY == 3 then
-    GRID = {
-        x = 16,
-        y = 15
-    }
-    OFFSET = 0
-    MINES = 37
-end
-MINES_LEFT = MINES
-
+MINES_LEFT = nil
 FIELD = {}
-for i = 1, GRID.x do
-    FIELD[i] = {}
-    for ii = 1, GRID.y do
-        FIELD[i][ii] = {
-            value = 0,
-            status = 1 -- 1: closed, 2: flagged, 3: open
-        }
-    end
-end
-
 GAME_STATE = 0
 TIMER = 0
 START_TIME = 0
 SERVICE_MSG = ''
 SERVICE_MSG_CLR = 7
 SERVICE_SPR = nil
+MENU_POS = 1
 
 local function find_neighbours(x, y)
     local neighbours = {
@@ -82,6 +57,16 @@ local function clear_zero_neighbours(zero_cell)
 end
 
 local function init_field()
+    for i = 1, GRID.x do
+        FIELD[i] = {}
+        for ii = 1, GRID.y do
+            FIELD[i][ii] = {
+                value = 0,
+                status = 1 -- 1: closed, 2: flagged, 3: open
+            }
+        end
+    end
+
     local mines_placed = 0
     while mines_placed < MINES do
         local x = flr(rnd(GRID.x)) + 1
@@ -168,16 +153,42 @@ local function check_win()
     return true
 end
 
-function _init()
+local function start_game()
+    DIFFICULTY = 4 - MENU_POS
+    if DIFFICULTY == 2 then
+        GRID = {
+            x = 12,
+            y = 12
+        }
+        OFFSET = 2
+        MINES = 22
+    elseif DIFFICULTY == 3 then
+        GRID = {
+            x = 16,
+            y = 15
+        }
+        OFFSET = 0
+        MINES = 37
+    end
+    MINES_LEFT = MINES
+
     init_field()
     GAME_STATE = 1
     START_TIME = time()
 end
 
-function _update()
-    if GAME_STATE ~= 1 then
-        return
+local function update_menu()
+    if (btnp(2)) then MENU_POS = MENU_POS - 1 end
+    if (btnp(3)) then MENU_POS = MENU_POS + 1 end
+    if MENU_POS < 1 then MENU_POS = 3 end
+    if MENU_POS > 3 then MENU_POS = 1 end
+
+    if btnp(5) then
+        start_game()
     end
+end
+
+local function update_game()
     TIMER = ceil(time() - START_TIME)
 
     local xdir = 0
@@ -224,8 +235,34 @@ function _update()
     end
 end
 
-function _draw()
-    cls(0)
+function _update()
+    if GAME_STATE == 0 then
+        update_menu()
+    elseif GAME_STATE == 1 then
+        update_game()
+    end
+end
+
+local function draw_menu()
+    print('pico-8 minesweeper', 0, 0)
+    print('choose difficulty', 0, 12)
+    local options = {'hard', 'medium', 'easy'}
+    for i = 1, 3 do
+        local point = '[ ]'
+        local clr = 7
+        if MENU_POS == i then
+            point = '[x]'
+            clr = 10
+        end
+        color(clr)
+        print(point .. ' ' .. options[i], 0, 24 + (i - 1) * 12)
+    end
+    color(7)
+    print('use ⬆️ and ⬇️ to select', 0, 60)
+    print('and press ❎ to start', 0, 72)
+end
+
+local function draw_game()
     color(7)
     for i = 1, GRID.x do
         for ii = 1, GRID.y do
@@ -261,5 +298,15 @@ function _draw()
     if SERVICE_MSG then
         color(SERVICE_MSG_CLR)
         print(SERVICE_MSG, 52, 123)
+    end
+end
+
+function _draw()
+    cls(0)
+    color(7)
+    if GAME_STATE >= 1 then
+        draw_game()
+    else
+        draw_menu()
     end
 end
