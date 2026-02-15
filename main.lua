@@ -46,6 +46,9 @@ local function clear_zero_neighbours(zero_cell)
             if nx >= 1 and ny >= 1 and nx <= GRID.x and ny <= GRID.y and FIELD[nx][ny].value ~= -1 then
                 -- Only process if not already opened
                 if FIELD[nx][ny].status ~= 3 then
+                    if FIELD[nx][ny].status == 2 then
+                        MINES_LEFT = MINES_LEFT + 1
+                    end
                     FIELD[nx][ny].status = 3
                     if FIELD[nx][ny].value == 0 then
                         to_clear[#to_clear + 1] = { x = nx, y = ny }
@@ -246,7 +249,7 @@ end
 local function draw_menu()
     print('pico-8 minesweeper', 0, 0)
     print('choose difficulty', 0, 12)
-    local options = {'hard', 'medium', 'easy'}
+    local options = { 'hard', 'medium', 'easy' }
     for i = 1, 3 do
         local point = '[ ]'
         local clr = 7
